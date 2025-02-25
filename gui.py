@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
                 margin-bottom: 20px;
             }
             QPushButton {
-                background-color: #4CAF50;
+                background-color: #01b8a5;
                 color: white;
                 font-size: 14px;
                 font-weight: bold;
@@ -32,11 +32,11 @@ class MainWindow(QMainWindow):
                 margin: 5px;
             }
             QPushButton:hover {
-                background-color: #45a049;
+                background-color: #01b8a5;
             }
             QPushButton:disabled {
                 background-color: #cccccc;
-                color: #666666;
+                color: #01b8a5;
             }
         """)
 
