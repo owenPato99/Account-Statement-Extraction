@@ -1,14 +1,13 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog, QLabel, QVBoxLayout, QWidget
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Extractor de Estados de Cuenta")
         self.setGeometry(200, 200, 400, 300)
-
         self.setFixedSize(400, 300)  
-
         self.setWindowIcon(QIcon("heza_logo.jpg"))
 
         self.label = QLabel("Carga un estado de cuenta en PDF", self)
@@ -32,6 +31,22 @@ class MainWindow(QMainWindow):
 
         self.file_path = None
 
+        # Habilitar arrastrar y soltar
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        for url in event.mimeData().urls():
+            file_path = url.toLocalFile()
+            if file_path.endswith('.pdf'):
+                self.file_path = file_path
+                self.label.setText(f"Archivo seleccionado:\n{file_path}")
+                self.btn_export_excel.setEnabled(True)
+                break
+
     def load_pdf(self):
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar PDF", "", "Archivos PDF (*.pdf);;Todos los archivos (*)", options=options)
@@ -50,7 +65,6 @@ class MainWindow(QMainWindow):
             if save_path:
                 extractor.save_to_excel(data, save_path)
                 self.label.setText(f"Datos guardados en:\n{save_path}")
-
 
 if __name__ == "__main__":
     import sys
