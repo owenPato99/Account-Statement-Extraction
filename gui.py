@@ -1,11 +1,15 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog, QLabel, QVBoxLayout, QWidget
-from extractor import PDFExtractor
+from PyQt5.QtGui import QIcon
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Extractor de Estados de Cuenta")
         self.setGeometry(200, 200, 400, 300)
+
+        self.setFixedSize(400, 300)  
+
+        self.setWindowIcon(QIcon("heza_logo.jpg"))
 
         self.label = QLabel("Carga un estado de cuenta en PDF", self)
         self.label.setStyleSheet("font-size: 14px;")
@@ -14,7 +18,7 @@ class MainWindow(QMainWindow):
         self.btn_select_file.clicked.connect(self.load_pdf)
 
         self.btn_export_excel = QPushButton("Exportar a Excel", self)
-        self.btn_export_excel.setEnabled(False)  
+        self.btn_export_excel.setEnabled(False)
         self.btn_export_excel.clicked.connect(self.export_to_excel)
 
         layout = QVBoxLayout()
@@ -38,24 +42,16 @@ class MainWindow(QMainWindow):
 
     def export_to_excel(self):
         if self.file_path:
+            from extractor import PDFExtractor
             extractor = PDFExtractor(self.file_path)
             data = extractor.extract_data()
 
-            options = QFileDialog.Options()
-            save_path, _ = QFileDialog.getSaveFileName(
-                self,
-                "Guardar como",
-                "estado_de_cuenta.xlsx",
-                "Archivos de Excel (*.xlsx);;Todos los archivos (*)",
-                options=options
-            )
-
-            if save_path:  
+            save_path, _ = QFileDialog.getSaveFileName(self, "Guardar como", "estado_de_cuenta.xlsx", "Archivos de Excel (*.xlsx);;Todos los archivos (*)")
+            if save_path:
                 extractor.save_to_excel(data, save_path)
                 self.label.setText(f"Datos guardados en:\n{save_path}")
 
 
-# Prueba rápida de la GUI
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
