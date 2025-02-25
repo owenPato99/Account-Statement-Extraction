@@ -18,18 +18,36 @@ class PDFExtractor:
     def process_text(self, text):
         lines = text.split("\n")
         extracted_data = []
+        current_transaction = []
 
         for line in lines:
+            parts = line.split()
             
-            match = re.match(r"(\d{1,2}[\/\-]\w{3,}|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s+(.*?)\s+([\d,]+\.\d{2})", line)
-            if match:
-                date, description, amount = match.groups()
-                extracted_data.append([date, description.strip(), amount.replace(",", "")])
+            # Detectamos si una línea tiene una fecha válida al inicio
+            if re.match(r"\d{1,2}[/-]\w{3,}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4}", parts[0]):
+                # Si ya hay datos acumulados en `current_transaction`, los guardamos
+                if current_transaction:
+                    extracted_data.append(current_transaction)
+                # Empezamos una nueva transacción
+                current_transaction = [parts[0]]  # Fecha
+                description = " ".join(parts[1:-3])  # Descripción en medio
+                deposits = parts[-3] if parts[-3].replace(",", "").replace(".", "").isdigit() else "0"
+                withdrawals = parts[-2] if parts[-2].replace(",", "").replace(".", "").isdigit() else "0"
+                balance = parts[-1] if parts[-1].replace(",", "").replace(".", "").isdigit() else "0"
+                current_transaction.extend([description, deposits, withdrawals, balance])
+            else:
+                # Si la línea no tiene fecha, puede ser parte de la descripción de la transacción anterior
+                if current_transaction:
+                    current_transaction[1] += " " + " ".join(parts)
+
+        # Guardamos la última transacción detectada
+        if current_transaction:
+            extracted_data.append(current_transaction)
 
         return extracted_data
 
     def save_to_excel(self, data, output_path="output.xlsx"):
-        df = pd.DataFrame(data, columns=["Fecha", "Descripción", "Monto"])
+        df = pd.DataFrame(data, columns=["Fecha", "Descripción", "Depósitos", "Retiros", "Saldo"])
         df.to_excel(output_path, index=False)
         print(f"Archivo guardado en: {output_path}")
 
