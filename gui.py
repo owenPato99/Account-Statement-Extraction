@@ -14,7 +14,7 @@ class MainWindow(QMainWindow):
         self.btn_select_file.clicked.connect(self.load_pdf)
 
         self.btn_export_excel = QPushButton("Exportar a Excel", self)
-        self.btn_export_excel.setEnabled(False)  # Se activa después de cargar un archivo
+        self.btn_export_excel.setEnabled(False)  
         self.btn_export_excel.clicked.connect(self.export_to_excel)
 
         layout = QVBoxLayout()
@@ -41,7 +41,6 @@ class MainWindow(QMainWindow):
             extractor = PDFExtractor(self.file_path)
             data = extractor.extract_data()
 
-            # Pedir al usuario una ubicación para guardar el archivo
             options = QFileDialog.Options()
             save_path, _ = QFileDialog.getSaveFileName(
                 self,
@@ -51,7 +50,7 @@ class MainWindow(QMainWindow):
                 options=options
             )
 
-            if save_path:  # Si el usuario elige una ubicación
+            if save_path:  
                 extractor.save_to_excel(data, save_path)
                 self.label.setText(f"Datos guardados en:\n{save_path}")
 

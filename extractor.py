@@ -20,7 +20,7 @@ class PDFExtractor:
         extracted_data = []
 
         for line in lines:
-            # Expresión regular para detectar líneas con movimientos (Fecha + Descripción + Monto)
+            
             match = re.match(r"(\d{1,2}[\/\-]\w{3,}|\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s+(.*?)\s+([\d,]+\.\d{2})", line)
             if match:
                 date, description, amount = match.groups()
@@ -33,7 +33,6 @@ class PDFExtractor:
         df.to_excel(output_path, index=False)
         print(f"Archivo guardado en: {output_path}")
 
-# Prueba rápida
 if __name__ == "__main__":
     extractor = PDFExtractor("estado_de_cuenta.pdf")
     data = extractor.extract_data()
