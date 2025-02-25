@@ -61,10 +61,15 @@ class MainWindow(QMainWindow):
             extractor = PDFExtractor(self.file_path)
             data = extractor.extract_data()
 
-            save_path, _ = QFileDialog.getSaveFileName(self, "Guardar como", "estado_de_cuenta.xlsx", "Archivos de Excel (*.xlsx);;Todos los archivos (*)")
+            save_path, _ = QFileDialog.getSaveFileName(self, "Guardar como", "", "Archivos de Excel (*.xlsx);;Todos los archivos (*)")
             if save_path:
-                extractor.save_to_excel(data, save_path)
-                self.label.setText(f"Datos guardados en:\n{save_path}")
+                try:
+                    extractor.save_to_excel(data, save_path)
+                    self.label.setText(f"Datos guardados en:\n{save_path}")
+                except PermissionError:
+                    self.label.setText("Error: No se pudo guardar el archivo. Verifica los permisos o cierra el archivo si está abierto.")
+                except Exception as e:
+                    self.label.setText(f"Error inesperado: {str(e)}")
 
 if __name__ == "__main__":
     import sys
